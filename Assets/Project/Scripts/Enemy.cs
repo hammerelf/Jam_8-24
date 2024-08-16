@@ -83,7 +83,7 @@ public class Enemy : MonoBehaviour
     {
         //transform.LookAt(GameManager.Instance.player.transform);
         checkCooldown += Time.deltaTime;
-        if(behavior == 3) SpiralMove();
+        //if(behavior == 3) SpiralMove();
     }
 
     private void TakeAction()
@@ -98,10 +98,10 @@ public class Enemy : MonoBehaviour
             case 2:
                 MoveAndTurn();
                 break;
-            //case 3:
-            //    SpiralMove();
-            //    //StartCoroutine(MoveInACircle());
-            //    break;
+            case 3:
+                SpiralMove();
+                //StartCoroutine(MoveInACircle());
+                break;
             case 4:
                 MoveWithBeat();
                 break;
@@ -133,43 +133,52 @@ public class Enemy : MonoBehaviour
 
         //float angle = angularVelocity * (Time.time - lastBeatTime);
         //Vector3 position = linearVelocity * Time.deltaTime * moveDistance;// (Time.time - lastBeatTime);
-        //position += new Vector3(Mathf.Cos(angle) * radii.x, 0, Mathf.Sin(angle) * radii.y);
+        //position += new Vector3(Mathf.Sin(angle) * radii.x, 0, Mathf.Cos(angle) * radii.y);
         //rb.MovePosition(position);
 
 
-        _center += Velocity * Time.deltaTime;
+        _center += Velocity * (Time.time - lastBeatTime);// Time.deltaTime;
 
-        _angle += RotateSpeed * Time.deltaTime;
+        _angle += RotateSpeed * (Time.time - lastBeatTime);// Time.deltaTime;
 
         var offset = new Vector3(Mathf.Sin(_angle), 0, Mathf.Cos(_angle)) * Radius;
 
         transform.position = _center + offset;
     }
 
-    private IEnumerator MoveInACircle()
+    private void OnCollisionEnter(Collision collision)
     {
-        if (isActing) yield break;
-
-        isActing = true;
-
-        float timer = 0;
-        Vector2 radii = new Vector2(2f, 3f);
-        float angularVelocity = 1f;
-        Vector2 linearVelocity = new Vector2(0.5f, 0f);
-
-        while(timer < 5)
+        if (collision.collider.gameObject.CompareTag("Player"))
         {
-            yield return new WaitForEndOfFrame();
-
-            float angle = angularVelocity * timer;
-            Vector2 position = linearVelocity * timer;
-            position += new Vector2(Mathf.Cos(angle) * radii.x, Mathf.Sin(angle) * radii.y);
-            transform.position = position;
-            
-            timer += Time.deltaTime;
+            GameManager.Instance.player.GetComponent<Player>().enemies.Remove(gameObject);
+            Destroy(gameObject);
         }
-
-        isActing = false;
-        yield break;
     }
+
+    //private IEnumerator MoveInACircle()
+    //{
+    //    if (isActing) yield break;
+
+    //    isActing = true;
+
+    //    float timer = 0;
+    //    Vector2 radii = new Vector2(2f, 3f);
+    //    float angularVelocity = 1f;
+    //    Vector2 linearVelocity = new Vector2(0.5f, 0f);
+
+    //    while(timer < 5)
+    //    {
+    //        yield return new WaitForEndOfFrame();
+
+    //        float angle = angularVelocity * timer;
+    //        Vector2 position = linearVelocity * timer;
+    //        position += new Vector2(Mathf.Cos(angle) * radii.x, Mathf.Sin(angle) * radii.y);
+    //        transform.position = position;
+
+    //        timer += Time.deltaTime;
+    //    }
+
+    //    isActing = false;
+    //    yield break;
+    //}
 }

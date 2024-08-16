@@ -1,6 +1,7 @@
 //Created by: Ryan King
 
 using HammerElf.Tools.Utilities;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -10,6 +11,8 @@ public class Player : MonoBehaviour
     public float moveDistance = 2;
     private Rigidbody rb;
 
+    public List<GameObject> enemies = new List<GameObject>();
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -18,6 +21,13 @@ public class Player : MonoBehaviour
     private void Update()
     {
         Movement();
+
+        if(enemies.Count <= 15)
+        {
+            ConsoleLog.Log("You win!!!");
+
+            EditorApplication.isPlaying = false;
+        }
     }
 
     private void Movement()
@@ -45,13 +55,13 @@ public class Player : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        if(collision.gameObject.CompareTag("Enemy"))
-        {
-            ConsoleLog.Log("You lose!!!");
+    //private void OnCollisionEnter(Collision collision)
+    //{
+    //    if(collision.gameObject.CompareTag("Enemy"))
+    //    {
+    //        ConsoleLog.Log("You lose!!!");
 
-            EditorApplication.isPlaying = false;
-        }
-    }
+    //        EditorApplication.isPlaying = false;
+    //    }
+    //}
 }
